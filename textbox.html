@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <title>Text Rolling Banner</title>
+    <link rel="stylesheet" href="signboard.css">
+</head>
+<body>
+    <div id="pattern"></div>
+    <div id="framebox" class="textGlow">
+        <p class="textBox"></p>
+    </div>
+
+    <script>
+        const frameBox = document.querySelector('#frameBox');
+        const textBox = document.querySelector('.textBox');
+        var textString = "세상을 더 즐겁게 \u00A0\u00A0\u00A0\u00A0 DNMD";
+        var textGap = 5;
+        var textSpeed = 2;
+        var textRepeat = 2;
+
+        var getParam = function(key) {
+            var _parammap = {};
+            document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, function () {
+                function decode(s) {
+                    return decodeURIComponent(s.split("+").join(" "));
+                };
+                _parammap[decode(arguments[1])] = decode(arguments[2]);
+            });
+            return _parammap[key];
+        };
+        
+        if (getParam("gap")) {
+            textGap = getParam("gap");
+        }
+
+        if (getParam("speed")) {
+            textSpeed = Number(getParam("speed"));
+        }
+
+        if (getParam("text")) {
+            textString = getParam("text");
+        }
+        setTextTo(textString);
+
+        let count = 0;
+        animate();
+
+        function setTextTo(str) {
+
+            textRepeat = Math.ceil(30 / str.length);
+            var string = "";
+            
+            for (i = 0; i < textGap; i++) {
+                str += "\u00A0";
+            }
+
+            for (i = 0; i < textRepeat; i++) {
+                string += str;
+            }
+            str = string;
+            textBox.innerHTML = str;
+        }
+
+        function animate() {
+            count += textSpeed;
+            count = marqueeText(count, textBox, -1);
+            window.requestAnimationFrame(animate);
+        }
+
+        function marqueeText(count, element, direction) {
+            if (count > element.scrollWidth / textRepeat) {
+                element.style.transform = 'translateX(0)';
+                count = 0;
+            }
+            element.style.transform = 'translateX('+ (count * direction) + 'px';
+            return count;
+        }
+    </script>
+</body>
+</html>
